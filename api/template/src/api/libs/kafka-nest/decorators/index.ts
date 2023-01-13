@@ -55,8 +55,7 @@ export const HandleMessage = (name: string): MethodDecorator => {
 
     // anotate for kafka subscriber dependency injection
     SetMetadata(kafkaRefelctKey, {
-      name,
-      methodName: propertyKey,
+      providerName: name,
     })(target, propertyKey, descriptor);
   };
 };

@@ -11,8 +11,6 @@ import { kafkaRefelctKey } from '../../decorators';
 
 const getKafkaToken = (token: string) => `KAFKA-SUBSCRIBER-${token}`;
 
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-
 @Global()
 @Module({
   imports: [DiscoveryModule],
@@ -20,21 +18,23 @@ const getKafkaToken = (token: string) => `KAFKA-SUBSCRIBER-${token}`;
 export class KafkaSubscriberFeatureModule implements OnModuleInit {
   constructor(
     private readonly discover: DiscoveryService,
-    @Inject(KAFKA_SUBSCRIBER_MAP) private readonly kafkaSubscriberMap: KafkaSubscriberMap
+    @Inject(KAFKA_SUBSCRIBER_MAP)
+    private readonly kafkaSubscriberMap: KafkaSubscriberMap
   ) {}
   public async onModuleInit() {
-    const providers = await this.discover.providerMethodsWithMetaAtKey(kafkaRefelctKey);
+    const providers: DiscoveredMethodWithMeta<{ providerName: string }>[] =
+      await this.discover.providerMethodsWithMetaAtKey(kafkaRefelctKey);
 
     for (const provider of providers) {
       const {
-        meta: { name },
+        meta: { providerName },
         discoveredMethod,
-      } = provider as DiscoveredMethodWithMeta<{ name: string; methodName: string }>;
+      } = provider;
 
-      const subscriber = this.kafkaSubscriberMap.get(name);
+      const subscriber = this.kafkaSubscriberMap.get(providerName);
 
       if (subscriber) {
-        subscriber.handleMessage = async (...args: any[]) => {
+        subscriber.handleMessage = async (...args) => {
           return await discoveredMethod.handler.apply(discoveredMethod.parentClass.instance, args);
         };
         await subscriber.boot();

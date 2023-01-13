@@ -5,10 +5,11 @@ module.exports = async (runner, args) => {
     const rc = args.rc;
     await runner.execute(
       [
-        `nx g @nrwl/nest:app ${rc.path}`,
-        "npm i ---save mongoose",
-        "npm i ---save @nestjs/mongoosee",
-        "npm i ---save @nestjs-plus/discovery",
+        "npm install -D @nrwl/nest@14.4.3",
+        `npx nx g @nrwl/nest:app ${rc.path}`,
+        "npm i --save mongoose",
+        "npm i --save @nestjs/mongoosee",
+        "npm i --save @nestjs-plus/discovery",
         "npm i --save @nestjs/microservices@8.4.7",
         "npm i --save lodash",
         "npm i --save class-validator class-transformer",
