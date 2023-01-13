@@ -5,7 +5,7 @@
     "Api",
     "Nest",
     "NestJS",
-    "Kafka",
+    "Kafka"
   ],
   "kind": "api",
   "folder": "apps",
