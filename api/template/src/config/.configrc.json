@@ -1,0 +1,11 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Cencosud-X/seki-schemas/main/v1/secrets/configrc.schema.json",
+  "secrets": {
+    "includes": [
+      "PRODUCT_NAME",
+      "API_SERVER_PORT",
+      "DATASOURCE_CONNECTION_STRING",
+      "DATABASE_NAME",
+    ]
+  }
+}
