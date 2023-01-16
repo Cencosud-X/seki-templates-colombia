@@ -38,7 +38,7 @@ export class KafkaSubscriberFeatureModule implements OnModuleInit {
           return await discoveredMethod.handler.apply(discoveredMethod.parentClass.instance, args);
         };
         await subscriber.boot();
-        Logger.log(`Kafka subscriber for topic ${subscriber.props.topic} listening`, name);
+        Logger.log(`Kafka subscriber for topic ${subscriber.props.topic} listening`, providerName);
       }
     }
     Logger.log('All Kafka subscribers listening', 'KafkaSubscribers');
