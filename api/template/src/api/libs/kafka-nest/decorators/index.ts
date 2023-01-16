@@ -33,7 +33,7 @@ export const HandleMessage = (name: string): MethodDecorator => {
         forEach(messageBodyParameters, ({ index, validatorClass }) => {
           const classValidatorInstance = plainToInstance(validatorClass, body);
           const errors = validateSync(classValidatorInstance);
-          if (errors.length > 0) throw errors;
+          if (errors.length > 0) throw errors.map((error) => error.toString());
           args[index] = classValidatorInstance;
         });
       }
