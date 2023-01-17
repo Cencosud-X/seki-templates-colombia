@@ -10,7 +10,12 @@ export const KAFKA_SUBSCRIBER_MAP = 'KAFKA_SUBSCRIBER_MAP ';
 export type KafkaSubscriberMap = Map<string, KafkaSubscriber>;
 
 export type PublisherTopic = {
-  connection: { topicName: string; version?: string; identifier?: string };
+  connection: {
+    topicName: string;
+    version?: string;
+    identifier?: string;
+    keepAlive?: boolean;
+  };
   name: string;
 };
 

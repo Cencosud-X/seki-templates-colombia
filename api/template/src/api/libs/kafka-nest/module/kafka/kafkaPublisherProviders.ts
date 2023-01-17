@@ -40,10 +40,11 @@ export class KafkaPublisherFeatureModule {
 
 export class KafkaPublisher extends Publisher {
   constructor(connection: PublisherTopic['connection']) {
-    const { topicName, version, identifier } = connection;
+    const { topicName, version, identifier, keepAlive } = connection;
     super({
       topic: `${topicName}${version ? `.v${version}` : ''}`,
       identifier,
+      keepAlive,
     });
   }
 }
