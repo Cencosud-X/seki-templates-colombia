@@ -1,5 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
-import { forEach } from 'lodash';
+import { flatMap, forEach, values } from 'lodash';
 import 'reflect-metadata';
 
 import { plainToInstance } from 'class-transformer';
@@ -33,7 +33,7 @@ export const HandleMessage = (name: string): MethodDecorator => {
         forEach(messageBodyParameters, ({ index, validatorClass }) => {
           const classValidatorInstance = plainToInstance(validatorClass, body);
           const errors = validateSync(classValidatorInstance);
-          if (errors.length > 0) throw errors.map((error) => error.toString());
+          if (errors.length > 0) throw flatMap(errors, (error) => values(error.constraints));
           args[index] = classValidatorInstance;
         });
       }
@@ -55,7 +55,8 @@ export const HandleMessage = (name: string): MethodDecorator => {
 
     // anotate for kafka subscriber dependency injection
     SetMetadata(kafkaRefelctKey, {
-      providerName: name,
+      name,
+      methodName: propertyKey,
     })(target, propertyKey, descriptor);
   };
 };
