@@ -1,9 +1,9 @@
 import { SetMetadata } from '@nestjs/common';
-import { flatMap, forEach, values } from 'lodash';
+import { flatMap, forEach, map, size, values } from 'lodash';
 import 'reflect-metadata';
 
 import { plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { validateSync, ValidationError } from 'class-validator';
 import { IMessage } from '@team_seki/kafka-streamer-plugin';
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
@@ -14,6 +14,21 @@ const messageBodyDecoratorKey = 'KAFKA_BODY_DECORATOR';
 const messageHeaderDecoratorKey = 'KAFKA_HEADER_DECORATOR';
 
 type metaDataValidator = { validatorClass: any; index: number };
+
+type errorType = string | { property: string; validationErrors: errorType[] };
+
+const processErrors = (error: ValidationError): errorType => {
+  if (!size(error.children)) {
+    return {
+      property: error.property,
+      validationErrors: values(error.constraints),
+    };
+  }
+  return {
+    property: error.property,
+    validationErrors: flatMap(error.children, (error) => processErrors(error)),
+  };
+};
 
 export const HandleMessage = (name: string): MethodDecorator => {
   return (target, propertyKey, descriptor: PropertyDescriptor): void => {
@@ -33,7 +48,12 @@ export const HandleMessage = (name: string): MethodDecorator => {
         forEach(messageBodyParameters, ({ index, validatorClass }) => {
           const classValidatorInstance = plainToInstance(validatorClass, body);
           const errors = validateSync(classValidatorInstance);
-          if (errors.length > 0) throw flatMap(errors, (error) => values(error.constraints));
+          if (errors.length > 0)
+            throw {
+              validatorClass: validatorClass.name,
+              validationErrors: map(errors, (error) => processErrors(error)),
+            };
+
           args[index] = classValidatorInstance;
         });
       }
